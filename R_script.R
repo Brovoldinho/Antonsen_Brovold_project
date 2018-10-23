@@ -24,3 +24,4 @@ laksepris <- spread(laksepris, statistikkvariabel, value)
 tail(laksepris)
 
 # en test for å se om det går og pushe
+# Ikke bra, men funka
