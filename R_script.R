@@ -22,3 +22,5 @@ laksepris <- unite(laksepris, date, c("year", "week"), sep = "-")
 laksepris <- spread(laksepris, statistikkvariabel, value)
 
 tail(laksepris)
+
+# en test for å se om det går og pushe
