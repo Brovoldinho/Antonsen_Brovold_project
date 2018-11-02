@@ -41,9 +41,9 @@ marine_harvest <- read_csv("https://www.netfonds.no/quotes/paperhistory.php?pape
 # Om du får til mer oversiktlig kode på dette så bare erstatt den som er der!
 
 
-laksepris_fersk <- laksepris[1:980,1:4]
+laksepris_fersk <- filter(laksepris, varegruppe == "Fersk oppalen laks")
 
-laksepris_frosset <- laksepris[981:1960,1:4]
+laksepris_frosset <- filter(laksepris, varegruppe == "Frosen oppalen laks")
 
 laksepris <- bind_cols(laksepris_fersk, laksepris_frosset)
 
@@ -54,4 +54,4 @@ colnames(laksepris) <- c("varegruppe", "date", "kilospris fersk laks", "vekt fer
 #Fjerner unødvendige kolonner
 laksepris[c("varegruppe","varegruppe1", "date1")] <- list(NULL)
 
-rm(laksepris_fersk, laksepris_frosset)
+
