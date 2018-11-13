@@ -68,6 +68,16 @@ marine_salmar %>%
 
 #-----------------------------------------------------------
 
+# Gjør marine_salmar om til ukentlig slik at den kan merges med laksepris
+marine_salmar <- marine_salmar %>%
+group_by(Date = cut(Date, "week"), Firm) %>% 
+  summarise(value = mean(Stock_value))
+
+# Gir samme datoformat til laksepris og marine_salmar
+
+marine_salmar$Date <- ymd(marine_salmar$Date)
+laksepris$Date <- ymd(laksepris$Date)
+
 # Velger varegruppe og kilopris fra laksepris_fersk
 
 marine_salmar_fersk <- left_join(laksepris_fersk, marine_salmar.long, by = "date")
