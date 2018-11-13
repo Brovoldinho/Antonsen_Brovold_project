@@ -8,6 +8,8 @@ library(PxWebApiData)
 library(tidyr)
 library(readr)
 library(dplyr)
+library(ggvis)
+library(lubridate)
 
 laksepris <- ApiData("http://data.ssb.no/api/v0/dataset/1122.json?lang=no", 
                      getDataByGET = TRUE, col_types = cols(måned = col_date(format = "%Y%m")))
@@ -28,6 +30,18 @@ laksepris <- laksepris %>%
 
 newdate <- seq(as.Date("2000-01-01"), as.Date("2018-11-01"), by = "weeks")
 laksepris$Date <- newdate
+
+#Datoene strekker seg ikke like langt tilbake i tid,
+# som salmar_marine så tar med relevante datoer.
+
+laksepris <- filter(laksepris, Date > "2007-05-07")
+fixeddate <- seq(as.Date("2007-05-07"), as.Date("2018-10-27"), by = "weeks")
+
+laksepris$Date <- fixeddate
+
+rm(newdate)
+
+laksepris %>% ggvis(~Date, ~Price_per_kg_NOK) %>% layer_paths()
 
 #---------------------------------------------------------------------------
 
@@ -57,8 +71,7 @@ marine_salmar<- marine_salmar %>% gather(key = "Firm", value = "Stock_value", -D
 
 #Plotter og fikser datoformatet for marine_salmar
 
-library(ggvis)
-library(lubridate)
+
 marine_salmar$Date <- ymd(marine_salmar$Date)
 
 marine_salmar %>% 
@@ -73,25 +86,23 @@ marine_salmar <- marine_salmar %>%
 group_by(Date = cut(Date, "week"), Firm) %>% 
   summarise(value = mean(Stock_value))
 
-# Gir samme datoformat til laksepris og marine_salmar
-
 marine_salmar$Date <- ymd(marine_salmar$Date)
-laksepris$Date <- ymd(laksepris$Date)
 
-# Velger varegruppe og kilopris fra laksepris_fersk
+# Merger marine_salmar og laksepris
 
-marine_salmar_fersk <- left_join(laksepris_fersk, marine_salmar.long, by = "date")
+marine_salmar_laksepris <- left_join(laksepris, marine_salmar, by = "Date")
 
-# merger laksepris_fersk og marine_salmar.long
-marine_salmar_fersk <- left_join(laksepris_fersk, marine_salmar.long, by = "date")
+# Plotter kurs for salmar og marine, og legger inn kilosprisen.
 
-# fjerner først variables.x så NA fra marine_salmar_fersk
-marine_salmar_fersk$variables.x = NULL
+marine_salmar_laksepris%>% 
+  group_by(Firm) %>%
+  ggvis(~Date, ~value, stroke = ~Firm)%>%
+  layer_paths()%>%
+  layer_paths(~Date, ~Price_per_kg_NOK, stroke = "Price per kg in NOK")%>%
+  add_axis("y", title = "Value")
+  
 
-df <- na.omit(marine_salmar_fersk)
 
-# Endrer navn på variablene
-colnames(df) <- c("dato", "kilospris", "bedrifter", "open")
 
 
 
