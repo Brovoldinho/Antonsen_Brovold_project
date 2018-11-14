@@ -164,9 +164,42 @@ plotModel(prisVolum)
 # Dette gir optimal pris
 -coef(prisVolum)[2]/(2*coef(prisVolum)[3])
 
+# Optimalt nivå på lakseprisene for mest profitt
+prisVolumFun <- makeFun(prisVolum)
+xyplot(Volume_tons ~ Price_per_kg_NOK, data = marine_salmar_laksepris, xlim = c(0,100))
+plotFun(prisVolumFun(Price_per_kg_NOK)~Price_per_kg_NOK, add=TRUE)
+ladd(panel.abline(v=-coef(prisVolum)[2]/(2*coef(prisVolum)[3]), col="red", lwd=3))
 
+car::deltaMethod(prisVolum, "-b2/(2*b3)", parameterNames= paste("b", 1:3, sep="")) 
+optPrisVolum <- car::deltaMethod(prisVolum, "-b2/(2*b3)", parameterNames= paste("b", 1:3, sep="")) 
+meanPrisVolum <- mean(~Price_per_kg_NOK, data = marine_salmar_laksepris)
+ladd(panel.abline(v=optPrisVolum$`2.5 %`, col="red", lwd=3, lty=2, alpha=.4))
+ladd(panel.abline(v=optPrisVolum$`97.5 %`, col="red", lwd=3, lty=2, alpha=.4))
+ladd(panel.abline(v=meanPrisVolum, col="green", lwd=3, lty=1, alpha=.6))
 
+# Optimal solgt volume. (Kanskje ikke nødvendig med dette?)
+volumPris <- lm(Price_per_kg_NOK~Volume_tons+I(Volume_tons^2), data=marine_salmar_laksepris)
+summary(volumPris)
+plotModel(volumPris)
+# Dette gir optimal volume
+-coef(volumPris)[2]/(2*coef(volumPris)[3])
 
+# Optimalt nivå på volumet
+volumPrisFun <- makeFun(volumPris)
+xyplot(Price_per_kg_NOK ~ Volume_tons, data = marine_salmar_laksepris, xlim = c(0,30000))
+plotFun(volumPrisFun(Volume_tons)~Volume_tons, add=TRUE)
+ladd(panel.abline(v=-coef(volumPris)[2]/(2*coef(volumPris)[3]), col="red", lwd=3))
 
-  
-    
+car::deltaMethod(volumPris, "-b2/(2*b3)", parameterNames= paste("b", 1:3, sep="")) 
+optVolumPris <- car::deltaMethod(volumPris, "-b2/(2*b3)", parameterNames= paste("b", 1:3, sep="")) 
+meanVolumPris <- mean(~Volume_tons, data = marine_salmar_laksepris)
+ladd(panel.abline(v=optVolumPris$`2.5 %`, col="red", lwd=3, lty=2, alpha=.4))
+ladd(panel.abline(v=optVolumPris$`97.5 %`, col="red", lwd=3, lty=2, alpha=.4))
+ladd(panel.abline(v=meanVolumPris, col="green", lwd=3, lty=1, alpha=.6))
+
+# Som vi kan se  ut ifra alle de lineære og ikke lineære regresjonsmodellene er det sterk relasjon mellom de forskjellige variablene.
+# Dersom pris på laks endres vil det medføre en endring i aksjekursene. Dersom volum endres vil også verdien av aksjene endres. 
+# Pris og volum har også en sterk relasjon. Finner også den beste prisen produsentene kan sette etter volum, altså tilbud = etterspørsel som er 56.80kr 
+# Det optimale nivået for pris pr kg er imellom ca 53kr til 60kr for å få mest profitt.
+# Det volumet som gir høyest profitt er 19623.27 tonn. 
+# Det optimale nivået for solgt volum erfra 17434.91 tonn til 21811.63 tonn.
