@@ -27,15 +27,30 @@ laksepris <- laksepris %>%
   filter(Goods == "Fersk oppalen laks")
 
 #Fikser datoen
+today <- Sys.Date()
 
-newdate <- seq(as.Date("2000-01-01"), as.Date("2018-11-01"), by = "weeks")
+newdate <- seq(as.Date("2000-01-01"), as.Date(today), by = "weeks")
+
+# Oppdateringen fra SSB henger en uke etter slik at vi må fjerne den siste uken fra,
+# newdate før vi klistrer den inn i datokolonnen i laksepris.
+
+newdate <- head(newdate, -1)
+
 laksepris$Date <- newdate
+
+# I tilfeller hvor dato matcher med laksepris datoene, betyr det at oppdatering
+# fra SSB i nåværende øyeblikk ikke henger en uke etter, slik at da ser man bort ifra
+# de to siste linjenene, og kjører rm(list=ls()) som står øverst i r fila.
+# Deretter kjører man laksepris$Datw <- newdate alene, for å få riktig dato.
+
 
 #Datoene strekker seg ikke like langt tilbake i tid,
 # som salmar_marine så tar med relevante datoer.
 
-laksepris <- filter(laksepris, Date > "2007-05-07")
-fixeddate <- seq(as.Date("2007-05-07"), as.Date("2018-10-27"), by = "weeks")
+laksepris <- filter(laksepris, Date > "2007-05-04")
+fixeddate <- seq(as.Date("2007-05-07"), as.Date(today), by = "weeks")
+
+fixeddate <- head(fixeddate, -1)
 
 laksepris$Date <- fixeddate
 
