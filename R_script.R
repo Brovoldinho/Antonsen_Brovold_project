@@ -116,7 +116,53 @@ marine_salmar_laksepris%>%
   layer_paths(~Date, ~Price_per_kg_NOK, stroke = "Price per kg in NOK")%>%
   add_axis("y", title = "Value")
   
+# Linear regression for verdi og pris
+# Her ser vi en sterk relasjon i mellom verdi og pris, p-value < signif.lvl
+verdiPris_linear <-lm(value~Price_per_kg_NOK, data=marine_salmar_laksepris)
+summary(verdiPris_linear)
+plotModel(verdiPris_linear)
 
+rm(verdiPris_linear)
+# Non linear regression model for verdi og pris
+verdiPris_nonlinear <-lm(value~log(Price_per_kg_NOK), data=marine_salmar_laksepris)
+summary(verdiPris_nonlinear)
+plotModel(verdiPris_nonlinear)
+
+rm(verdiPris_nonlinear)
+
+# Linear regression for value og volum (Sterk relasjon, p-value < sign.nivå)
+valueVolum_linear <- lm(value~Volume_tons, data=marine_salmar_laksepris)
+summary(valueVolum_linear)
+plotModel(valueVolum_linear)
+
+rm(valueVolum_linear)
+# Non linear regression model for value og volum
+valueVolum_nonlinear <-lm(value~log(Volume_tons), data=marine_salmar_laksepris)
+summary(valueVolum_nonlinear)
+plotModel(valueVolum_nonlinear)
+
+rm(valueVolum_nonlinear)
+
+# Linear regression model for volume og pris  
+prisVolum_linear <- lm(Volume_tons~Price_per_kg_NOK, data=marine_salmar_laksepris)
+summary(prisVolum_linear)
+plotModel(prisVolum_linear)
+
+rm(prisVolum_linear)
+# Non linear regression model for volume og pris
+valueVolum_nonlinear <-lm(Price_per_kg_NOK~log(Volume_tons), data=marine_salmar_laksepris)
+summary(valueVolum_nonlinear)
+plotModel(valueVolum_nonlinear)
+
+rm(valueVolum_nonlinear)
+
+# Hva er  optimal pris mellom solgt kvantum og pris? (Etterspørsel = Tilbud)
+# Ordner andregradsligning i den lineære modellen for å få en kurve med topp punkt
+prisVolum <- lm(Volume_tons~Price_per_kg_NOK+I(Price_per_kg_NOK^2), data=marine_salmar_laksepris)
+summary(prisVolum)
+plotModel(prisVolum)
+# Dette gir optimal pris
+-coef(prisVolum)[2]/(2*coef(prisVolum)[3])
 
 
 
