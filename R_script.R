@@ -10,6 +10,7 @@ library(readr)
 library(dplyr)
 library(ggvis)
 library(lubridate)
+library(mosaic)
 
 laksepris <- ApiData("http://data.ssb.no/api/v0/dataset/1122.json?lang=no", 
                      getDataByGET = TRUE, col_types = cols(måned = col_date(format = "%Y%m")))
@@ -58,7 +59,8 @@ rm(newdate)
 
 laksepris %>% ggvis(~Date, ~Price_per_kg_NOK) %>%
   layer_paths() %>%
-  add_axis("y", title = "Price per kg in NOK")
+  add_axis("y", title = "Price per kg in NOK") %>%
+  layer_smooths(stroke :="red")
 
 #---------------------------------------------------------------------------
 
