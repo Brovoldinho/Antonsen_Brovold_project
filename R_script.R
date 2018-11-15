@@ -56,7 +56,9 @@ laksepris$Date <- fixeddate
 
 rm(newdate)
 
-laksepris %>% ggvis(~Date, ~Price_per_kg_NOK) %>% layer_paths()
+laksepris %>% ggvis(~Date, ~Price_per_kg_NOK) %>%
+  layer_paths() %>%
+  add_axis("y", title = "Price per kg in NOK")
 
 #---------------------------------------------------------------------------
 
@@ -92,7 +94,8 @@ marine_salmar$Date <- ymd(marine_salmar$Date)
 marine_salmar %>% 
   group_by(Firm) %>%
   ggvis(~Date, ~Stock_value, stroke = ~Firm) %>%
-  layer_paths()
+  layer_paths() %>%
+  add_axis("y", title = "Stock value")
 
 #-----------------------------------------------------------
 
@@ -111,6 +114,16 @@ marine_salmar_laksepris <- left_join(laksepris, marine_salmar, by = "Date")
 
 marine_salmar_laksepris%>% 
   group_by(Firm) %>%
+  ggvis(~Date, ~value, stroke = ~Firm)%>%
+  layer_paths()%>%
+  layer_paths(~Date, ~Price_per_kg_NOK, stroke = "Price per kg in NOK")%>%
+  add_axis("y", title = "Value")
+
+#Plotter deretter en plot som viser de siste 5 årene.
+
+marine_salmar_laksepris%>% 
+  group_by(Firm) %>%
+  filter(Date>"2014-01-01") %>%
   ggvis(~Date, ~value, stroke = ~Firm)%>%
   layer_paths()%>%
   layer_paths(~Date, ~Price_per_kg_NOK, stroke = "Price per kg in NOK")%>%
