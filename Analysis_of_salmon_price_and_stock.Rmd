@@ -1,7 +1,7 @@
 ---
-title: "Analysis of changes in the price of salmon and how it affects the share prices of norwegian salmon producing companies "
+title: "Does changes in the price of salmon affect salmon producing companies? "
 author: "Even Grindstad Brovold & Orjan Mikal Antonsen"
-date: "15 november 2018"
+date: "16 november 2018"
 output: html_document
 ---
 
@@ -16,16 +16,16 @@ library(readr)
 library(dplyr)
 library(ggvis)
 library(lubridate)
-library(mosaic)
+library(mosaic) 
 ```
 
-#Introduction
+####**Introduction**
 The norwegian salmon has become a highly demanded commodity, during the past couple of decades. This had made salmon production a big buisiness in Norway. In fact the fifth most valuable company listed on the norwegian stock marked, is a salmon producing company, respectively "Marine harvest". The second largest salmon producing company in Norway is "Salmar", who holds the tenth place on the list of most valuable stocks. Considering a rich country like Norway, the position of these two companies means they are doing serious buisiness. 
 
 In this analysis we are going to take a look at how the stock prices of these two have changed the past years. We will also take a look at how the price of salmon has changed during the course of the last years. Then we will take a look on how the changes in the price of salmon, has affected the stock value of the aforementioned salmon producing companies. We will be using data from the statistical bureau in Norway "SSB", and from https://www.netfonds.no/ who provides stock data. As addidtional information, we will be focusing on raw salmon and not frozen. This is simply due to the fact that there is fourthy times more turnover of raw salmon than frozen.
 
 
-##The salmon price during the last years
+####The salmon price during the last years
 
 ```{r}
 laksepris <- ApiData("http://data.ssb.no/api/v0/dataset/1122.json?lang=no", 
@@ -85,7 +85,7 @@ siste_laksepris <-tail(laksepris$Price_per_kg_NOK, 1)
 We will start this analysis by diving into the development of the salmon price during the past years. As we can see from the graph above, the price has almost tripled since 2007 to 2018. Then later the prize has taken a litle hit at start of the summer of 2018. There has been massive fluctuations in the price, especially in the years 2011-2012, 2014-2015 and 2017-2018. The reason behind these fluctuations is not what this analysis will focus on, so this is merely an observation. The most important lesson from this graph is the red line showing a continuosly growth in the salmon price in the past years. The last uppdated salmon price as this repport is written is `r siste_laksepris` NOK/kg.
 
 
-##Salmar and Marine harvest during the course of past years
+####Salmar and Marine harvest during the course of past years
 
 ```{r, message=FALSE }
 #Leser inn data fra netfonds på Salmar
@@ -127,7 +127,7 @@ Keep in mind that this graph displays the price of a stock share per company. It
 
 Looking throughout this entire graph it seems like whenever one of the companies has a posetive growth in the stock share value, the other company experiences the same. Likewise when one of them is experiencing a decrease in stock value, the same happens to the other company. Of course these changes is different in these two companies. Especially after the year of 2016, where it seems like Salmar is experiencing a greater increase in stock share value, than Marine harvest does. Although the magnitude of the fluctuations vary a lot between these firms after 2016, they have the same tendensies when the counterpart experiences decrease or increase in stock share values.
 
-## Including the salmon price in the graph with Salmar and Marine harvest
+#### Including the salmon price in the graph with Salmar and Marine harvest
 
 ```{r}
 marine_salmar <- marine_salmar %>%
