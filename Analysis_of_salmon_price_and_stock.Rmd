@@ -20,13 +20,13 @@ library(mosaic)
 ```
 
 
-####**Introduction**
+#### **Introduction**
 The norwegian salmon has become a highly demanded commodity, during the past couple of decades. This had made salmon production a big buisiness in Norway. In fact the fifth most valuable company listed on the norwegian stock marked, is a salmon producing company, respectively "Marine harvest". The second largest salmon producing company in Norway is "Salmar", who holds the tenth place on the list of most valuable stocks. Considering a rich country like Norway, the position of these two companies means they are doing serious buisiness. 
 
 In this analysis we are going to take a look at how the stock prices of these two have changed the past years. We will also take a look at how the price of salmon has changed during the course of the last years. Then we will take a look on how the changes in the price of salmon, has affected the stock value of the aforementioned salmon producing companies. We will be using data from the statistical bureau in Norway "SSB", and from https://www.netfonds.no/ who provides stock data. As addidtional information, we will be focusing on raw salmon and not frozen. This is simply due to the fact that there is fourthy times more turnover of raw salmon than frozen.
 
 
-####**The salmon price during the last years**
+#### **The salmon price during the last years**
 
 ```{r}
 laksepris <- ApiData("http://data.ssb.no/api/v0/dataset/1122.json?lang=no", 
@@ -86,7 +86,7 @@ siste_laksepris <-tail(laksepris$Price_per_kg_NOK, 1)
 We will start this analysis by diving into the development of the salmon price during the past years. As we can see from the graph above, the price has almost tripled since 2007 to 2018. Then later the prize has taken a litle hit at start of the summer of 2018. There has been massive fluctuations in the price, especially in the years 2011-2012, 2014-2015 and 2017-2018. The reason behind these fluctuations is not what this analysis will focus on, so this is merely an observation. The most important lesson from this graph is the red line showing a continuosly growth in the salmon price in the past years. The last uppdated salmon price as this repport is written is `r siste_laksepris` NOK/kg.
 
 
-####**Salmar and Marine harvest during the course of past years**
+#### **Salmar and Marine harvest during the course of past years**
 
 ```{r, message=FALSE }
 #Leser inn data fra netfonds på Salmar
@@ -128,7 +128,7 @@ Keep in mind that this graph displays the price of a stock share per company. It
 
 Looking throughout this entire graph it seems like whenever one of the companies has a posetive growth in the stock share value, the other company experiences the same. Likewise when one of them is experiencing a decrease in stock value, the same happens to the other company. Of course these changes is different in these two companies. Especially after the year of 2016, where it seems like Salmar is experiencing a greater increase in stock share value, than Marine harvest does. Although the magnitude of the fluctuations vary a lot between these firms after 2016, they have the same tendensies when the counterpart experiences decrease or increase in stock share values.
 
-####**Including the salmon price in the graph with Salmar and Marine harvest**
+#### **Including the salmon price in the graph with Salmar and Marine harvest**
 
 ```{r}
 marine_salmar <- marine_salmar %>%
@@ -164,6 +164,113 @@ marine_salmar_laksepris%>%
 ```
 
 In this graph it's a bit easier to spot some tendencies. Especially mid 2016, and the first quarter of 2017. Where we ca see a decrease in the salmon price we also se a decrease in stock share price for our companies. The increase in the salmon price at the start of 2018, is also followed by an increase in the stock share prices to Salmar and Marine harvest.
- 
 
+
+In the first graph we have put togheter price each kg in NOK with the stock price for Marine harvest and Salmar. We can see that the price for each kg is increasing as we saw earlier, also that the stock value for each company is increasing. This seems to be related. So we did a few different linear and non linear regression to see what variables are positive related.
+
+#### Linear regression for stock value and price each kg NOK
+```{r}
+# Linear regression for verdi og pris
+# Her ser vi en sterk relasjon i mellom verdi og pris, p-value < signif.lvl
+verdiPris_linear <-lm(value~Price_per_kg_NOK, data=marine_salmar_laksepris)
+summary(verdiPris_linear)
+plotModel(verdiPris_linear)
+
+rm(verdiPris_linear)
+# Non linear regression model for verdi og pris
+verdiPris_nonlinear <-lm(value~log(Price_per_kg_NOK), data=marine_salmar_laksepris)
+summary(verdiPris_nonlinear)
+plotModel(verdiPris_nonlinear)
+
+rm(verdiPris_nonlinear)
+```
+Calculating the linear and non linear regression between stock value and price each kg NOK. As we can see the p-value < significant level, which means that the stock value and price is positiv related. So when the price for salmon increases or decreases the stock value for this firms will have the same effect. This variables are stronlgy related.
+
+#### Linear regression for value and volume
+```{r}
+# Linear regression for value og volum (Sterk relasjon, p-value < sign.nivå)
+valueVolum_linear <- lm(value~Volume_tons, data=marine_salmar_laksepris)
+summary(valueVolum_linear)
+plotModel(valueVolum_linear)
+
+rm(valueVolum_linear)
+# Non linear regression model for value og volum
+valueVolum_nonlinear <-lm(value~log(Volume_tons), data=marine_salmar_laksepris)
+summary(valueVolum_nonlinear)
+plotModel(valueVolum_nonlinear)
+
+rm(valueVolum_nonlinear)
+```
+Calculating the linear and non linear regression between value and volume aswell. This is also positiv related, meaning that the p-value < significant level. So when the stock value for this firms increases or decreases so will the volume of salmon follow. This variables are stronlgy related.
+
+#### Linear regression model for volume and price
+```{r}
+# Linear regression model for volume og pris  
+prisVolum_linear <- lm(Volume_tons~Price_per_kg_NOK, data=marine_salmar_laksepris)
+summary(prisVolum_linear)
+plotModel(prisVolum_linear)
+
+rm(prisVolum_linear)
+# Non linear regression model for volume og pris
+valueVolum_nonlinear <-lm(Price_per_kg_NOK~log(Volume_tons), data=marine_salmar_laksepris)
+summary(valueVolum_nonlinear)
+plotModel(valueVolum_nonlinear)
+
+rm(valueVolum_nonlinear)
+```
+Calculating the linear and non linear regression between volume and price. In this instance it does also have a positiv relation, p-value < significant level. So when the price increases so will the volume. This is not suprising since it's supply and demand. Keep in mind that increasing the price to high might reduce volume, since fewer might buy when the price is to high. It is not shown in this non and linear model what happens if the price goes very high. This variables are stronlgy related.
+
+### What is the optimal price and volume ?
+```{r}
+# Hva er  optimal pris mellom solgt kvantum og pris? (Etterspørsel = Tilbud)
+# Ordner andregradsligning i den lineære modellen for å få en kurve med topp punkt
+prisVolum <- lm(Volume_tons~Price_per_kg_NOK+I(Price_per_kg_NOK^2), data=marine_salmar_laksepris)
+summary(prisVolum)
+plotModel(prisVolum)
+# Dette gir optimal pris
+-coef(prisVolum)[2]/(2*coef(prisVolum)[3])
+
+# Optimalt nivå på lakseprisene for mest profitt
+prisVolumFun <- makeFun(prisVolum)
+xyplot(Volume_tons ~ Price_per_kg_NOK, data = marine_salmar_laksepris, xlim = c(0,100))
+plotFun(prisVolumFun(Price_per_kg_NOK)~Price_per_kg_NOK, add=TRUE)
+ladd(panel.abline(v=-coef(prisVolum)[2]/(2*coef(prisVolum)[3]), col="red", lwd=3))
+
+car::deltaMethod(prisVolum, "-b2/(2*b3)", parameterNames= paste("b", 1:3, sep="")) 
+optPrisVolum <- car::deltaMethod(prisVolum, "-b2/(2*b3)", parameterNames= paste("b", 1:3, sep="")) 
+meanPrisVolum <- mean(~Price_per_kg_NOK, data = marine_salmar_laksepris)
+ladd(panel.abline(v=optPrisVolum$`2.5 %`, col="red", lwd=3, lty=2, alpha=.4))
+ladd(panel.abline(v=optPrisVolum$`97.5 %`, col="red", lwd=3, lty=2, alpha=.4))
+
+# Som vi kan se  ut ifra alle de lineære og ikke lineære regresjonsmodellene er det sterk relasjon mellom de forskjellige variablene.
+# Dersom pris på laks endres vil det medføre en endring i aksjekursene. Dersom volum endres vil også verdien av aksjene endres. 
+# Pris og volum har også en sterk relasjon. Finner også den beste prisen produsentene kan sette etter volum, altså tilbud = etterspørsel som er 56.80kr 
+# Det optimale nivået for pris pr kg er imellom ca 53kr til 60kr for å få mest profitt.
+# Det volumet som gir høyest profitt er 19623.27 tonn. 
+# Det optimale nivået for solgt volum erfra 17434.91 tonn til 21811.63 tonn.
+```
+We can calculate the optimal pricing for the firms which will maximize profit. Using price and volume (supply=demands). First we have to make a linear regression between price and volume using a second degree formula. This is so we can find the maximal point and where the volume starts to decrease as the price increases, which we couldn't see using the regular linear and non linear from above. To find the optimal price to maximize profit, we will have to derivative the function with respects to price and set the equation equal to zero. The result is 56,8NOK is the maximizing value for profit. We can also calulate the optimal level where the price will give best value using a correlation level of 0.05. The optimal level is between 53,6 NOK and 59,9 NOK, this is what price level the firms will maximize and should be keeping. We can also make a graph showing the optimal level. As we can see it shows between 50 and 60 NOK.
+
+### What is the optimal volume?
+```{r}
+# Optimal solgt volume. (Kanskje ikke nødvendig med dette?)
+volumPris <- lm(Price_per_kg_NOK~Volume_tons+I(Volume_tons^2), data=marine_salmar_laksepris)
+summary(volumPris)
+plotModel(volumPris)
+# Dette gir optimal volume
+-coef(volumPris)[2]/(2*coef(volumPris)[3])
+
+# Optimalt nivå på volumet
+volumPrisFun <- makeFun(volumPris)
+xyplot(Price_per_kg_NOK ~ Volume_tons, data = marine_salmar_laksepris, xlim = c(0,30000))
+plotFun(volumPrisFun(Volume_tons)~Volume_tons, add=TRUE)
+ladd(panel.abline(v=-coef(volumPris)[2]/(2*coef(volumPris)[3]), col="red", lwd=3))
+
+car::deltaMethod(volumPris, "-b2/(2*b3)", parameterNames= paste("b", 1:3, sep="")) 
+optVolumPris <- car::deltaMethod(volumPris, "-b2/(2*b3)", parameterNames= paste("b", 1:3, sep="")) 
+meanVolumPris <- mean(~Volume_tons, data = marine_salmar_laksepris)
+ladd(panel.abline(v=optVolumPris$`2.5 %`, col="red", lwd=3, lty=2, alpha=.4))
+ladd(panel.abline(v=optVolumPris$`97.5 %`, col="red", lwd=3, lty=2, alpha=.4))
+```
+Using the same method we can also calculate the optimal volume this firms should be selling. The optimal volume is 19636,21 ton, we can also calculate the optimal level which is 17446.05 tons and 21826.38 using 0,05 correlation level.
 
