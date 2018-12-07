@@ -182,6 +182,7 @@ MarinePris_linear <-lm(value~Price_per_kg_NOK, data=MarinePris)
 summary(MarinePris_linear)
 plotModel(MarinePris_linear)
 ```
+
 Calculating the linear regression between stock value for Marine harvest and price each kg NOK. As we can see the p-value < significant level, which means that the stock value and price is positiv related. So when the price for salmon increases or decreases the stock value for this firm will have the same effect. This variables are strongly related.
 
 #### Linear regression for value and Salmar stock prices
@@ -194,6 +195,7 @@ SalmarPris_linear <-lm(value~Price_per_kg_NOK, data=SalmarPris)
 summary(SalmarPris_linear)
 plotModel(SalmarPris_linear)
 ```
+
 Calculating the linear regression between value and Salmar stock prices. This is also positiv related, meaning that the p-value < significant level. So when the price for
 Salmon decreases or increases so will the stock price follow. This variables are strongly related.
 
@@ -206,6 +208,7 @@ plotModel(prisVolum_linear)
 
 rm(prisVolum_linear)
 ```
+
 Calculating the linear regression between volume and price. In this instance it does also have a positiv relation, p-value < significant level. So when the price increases so will the volume. This is not suprising since it's supply and demand. Keep in mind that increasing the price to high might reduce volume, since fewer might buy when the price is to high. It is not shown in this non and linear model what happens if the price goes very high. This variables are stronlgy related.
 
 ### What is the optimal price?
