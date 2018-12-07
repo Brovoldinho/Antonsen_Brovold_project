@@ -32,7 +32,7 @@ In this analysis we are going to take a look at how the stock prices of these tw
 
 ```{r}
 laksepris <- ApiData("http://data.ssb.no/api/v0/dataset/1122.json?lang=no", 
-                     getDataByGET = TRUE, col_types = cols(måned = col_date(format = "%Y%m")))
+                     getDataByGET = TRUE, col_types = cols(month = col_date(format = "%Y%m")))
 
 # Henter ut datasettet fra laksepris
 laksepris <- laksepris[[1]]
@@ -155,45 +155,47 @@ marine_salmar_laksepris%>%
   add_axis("y", title = "Value")
 ```
 
-With the including of the salmon price in this graph we can se that there are some tendencies of correlation between the salmon price and the stock share price for our aformentioned companies. Maybe a bit hard to tell in this graph, but we can take a look at a figure from 2014 to today instead.
+With the including of the salmon price in this graph we can se that there are some tendencies of correlation between the salmon price and the stock share price for our aformentioned companies. Maybe a bit hard to tell in this graph, but we can take a look at a figure with logarithmic scale.
 
 ```{r}
 marine_salmar_laksepris%>% 
   group_by(Firm) %>%
-  filter(Date>"2014-01-01") %>%
   ggvis(~Date, ~value, stroke = ~Firm)%>%
   layer_paths()%>%
   layer_paths(~Date, ~Price_per_kg_NOK, stroke = "Price per kg in NOK")%>%
-  add_axis("y", title = "Value")
+  add_axis("y", title = "Value") %>% 
+  scale_numeric("y", trans="log", expand=0)
 ```
 
-In this graph it's a bit easier to spot some tendencies. Especially mid 2016, and the first quarter of 2017. Where we ca see a decrease in the salmon price we also se a decrease in stock share price for our companies. The increase in the salmon price at the start of 2018, is also followed by an increase in the stock share prices to Salmar and Marine harvest.
+In this graph it's a bit easier to spot some tendencies. Especially in 2009, and the 2012. Where we ca see a decrease in the salmon price we also se a decrease in stock share price for our companies. The increase in the salmon price at 2013, is also followed by an increase in the stock share prices to Salmar and Marine harvest.
 
 
 In the first graph we have put togheter price each kg in NOK with the stock price for Marine harvest and Salmar. We can see that the price for each kg is increasing as we saw earlier, also that the stock value for each company is increasing. This seems to be related. So we did a few different linear and non linear regression to see what variables are positive related.
 
-#### Linear regression for stock value and price each kg NOK
+#### Linear regression for Marine harvest stock value and price each kg NOK
 ```{r}
-# Linear regression for verdi og pris
-# Her ser vi en sterk relasjon i mellom verdi og pris, p-value < signif.lvl
-verdiPris_linear <-lm(value~Price_per_kg_NOK, data=marine_salmar_laksepris)
-summary(verdiPris_linear)
-plotModel(verdiPris_linear)
+# Linear regression for aksjekursene til Marine harvest og laksepris
+MarinePris<- marine_salmar_laksepris %>% 
+  filter(Firm=="Marine harvest") 
 
-rm(verdiPris_linear)
+MarinePris_linear <-lm(value~Price_per_kg_NOK, data=MarinePris)
+summary(MarinePris_linear)
+plotModel(MarinePris_linear)
 ```
-Calculating the linear regression between stock value and price each kg NOK. As we can see the p-value < significant level, which means that the stock value and price is positiv related. So when the price for salmon increases or decreases the stock value for this firms will have the same effect. This variables are stronlgy related.
+Calculating the linear regression between stock value for Marine harvest and price each kg NOK. As we can see the p-value < significant level, which means that the stock value and price is positiv related. So when the price for salmon increases or decreases the stock value for this firm will have the same effect. This variables are strongly related.
 
-#### Linear regression for value and volume
+#### Linear regression for value and Salmar stock prices
 ```{r}
-# Linear regression for value og volum (Sterk relasjon, p-value < sign.nivå)
-valueVolum_linear <- lm(value~Volume_tons, data=marine_salmar_laksepris)
-summary(valueVolum_linear)
-plotModel(valueVolum_linear)
+# Linear regression for aksjekursene til Salmar og laksepris
+SalmarPris<- marine_salmar_laksepris %>% 
+  filter(Firm=="Salmar") 
 
-rm(valueVolum_linear)
+SalmarPris_linear <-lm(value~Price_per_kg_NOK, data=SalmarPris)
+summary(SalmarPris_linear)
+plotModel(SalmarPris_linear)
 ```
-Calculating the linear regression between value and volume aswell. This is also positiv related, meaning that the p-value < significant level. So when the stock value for this firms increases or decreases so will the volume of salmon follow. This variables are stronlgy related.
+Calculating the linear regression between value and Salmar stock prices. This is also positiv related, meaning that the p-value < significant level. So when the price for
+Salmon decreases or increases so will the stock price follow. This variables are strongly related.
 
 #### Linear regression model for volume and price
 ```{r}
