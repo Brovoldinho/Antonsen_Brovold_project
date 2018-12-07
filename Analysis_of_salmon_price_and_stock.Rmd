@@ -297,3 +297,5 @@ ladd(panel.abline(v=meanVolumPris, col="green", lwd=3, lty=1, alpha=.6))
 
 Using the same method we can also calculate the optimal volume this firms should be selling. The optimal current volume as shown above, we can also calculate the optimal level which we can see in the graph above.
 
+## Some concluding words
+We have displayed the development of the salmon price and the stock prices of Salmar and Marine harvest, during the past years. Furthermore we did find a correlation between the salmon price and the stock value of Salmar and Marine harvest. And this is as deep this analysis goes.  
