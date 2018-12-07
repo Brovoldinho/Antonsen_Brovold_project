@@ -60,14 +60,10 @@ newdate <- head(newdate, fixingdate)
 
 laksepris$Date <- newdate
 
-# I tilfeller hvor dato matcher med laksepris datoene, betyr det at oppdatering
-# fra SSB i nåværende øyeblikk ikke henger en uke etter, slik at da ser man bort ifra
-# de to siste linjenene, og kjører rm(list=ls()) som står øverst i r fila.
-# Deretter kjører man laksepris$Datw <- newdate alene, for å få riktig dato.
+# Deretter kjører man laksepris$Date <- newdate alene, for å få riktig dato.
 
 
-#Datoene strekker seg ikke like langt tilbake i tid,
-# som salmar_marine så tar med relevante datoer.
+# Datoene strekker seg ikke like langt tilbake i tid, som salmar_marine så tar med relevante datoer.
 
 laksepris <- filter(laksepris, Date > "2007-05-04")
 fixeddate <- seq(as.Date("2007-05-07"), as.Date(today), by = "weeks")
@@ -262,7 +258,7 @@ We can calculate the optimal pricing for the firms which will maximize profit. U
 ### What is the optimal volume?
 
 ```{r}
-# Optimal solgt volume. (Kanskje ikke nødvendig med dette?)
+# Optimal solgt volume. 
 volumPris <- lm(Price_per_kg_NOK~Volume_tons+I(Volume_tons^2), data=marine_salmar_laksepris)
 summary(volumPris)
 plotModel(volumPris)

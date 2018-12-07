@@ -34,12 +34,10 @@ newdate <- seq(as.Date("2000-01-01"), as.Date(today), by = "weeks")
 
 # Oppdateringen fra SSB henger en uke etter slik at vi må fjerne den siste uken fra,
 # newdate før vi klistrer den inn i datokolonnen i laksepris.
-fixingdate <-length(laksepris$Date)
-
-newdate <- head(newdate, fixingdate)
+newdate <- head(newdate, -2)
 
 laksepris$Date <- newdate
- 
+
 # I tilfeller hvor dato matcher med laksepris datoene, betyr det at oppdatering
 # fra SSB i nåværende øyeblikk ikke henger en uke etter, slik at da ser man bort ifra
 # de to siste linjenene, og kjører rm(list=ls()) som står øverst i r fila.
@@ -132,27 +130,21 @@ marine_salmar_laksepris%>%
   add_axis("y", title = "Value") %>% 
   scale_numeric("y", trans="log", expand=0)
 
-# Linear regression for aksjekursene til salmar og laksepris
-verdiPris_linear <-lm(value~Price_per_kg_NOK, data=marine_salmar_laksepris, filter="Firm")
+# Linear regression for aksjekursene til Salmar og laksepris
+SalmarPris<- marine_salmar_laksepris %>% 
+  filter(Firm=="Salmar") 
 
-marine_salmar_laksepris %>% 
-  filt(Firm=="Salmar")
+SalmarPris_linear <-lm(value~Price_per_kg_NOK, data=SalmarPris)
+summary(SalmarPris_linear)
+plotModel(SalmarPris_linear)
 
+# Linear regression for aksjekursene til Marine harvest og laksepris
+MarinePris<- marine_salmar_laksepris %>% 
+  filter(Firm=="Marine harvest") 
 
-# Linear regression for verdi og pris
-# Her ser vi en sterk relasjon i mellom verdi og pris, p-value < signif.lvl
-verdiPris_linear <-lm(value~Price_per_kg_NOK, data=marine_salmar_laksepris)
-summary(verdiPris_linear)
-plotModel(verdiPris_linear)
-
-rm(verdiPris_linear)
-
-# Linear regression for value og volum (Sterk relasjon, p-value < sign.nivå)
-valueVolum_linear <- lm(value~Volume_tons, data=marine_salmar_laksepris)
-summary(valueVolum_linear)
-plotModel(valueVolum_linear)
-
-rm(valueVolum_linear)
+MarinePris_linear <-lm(value~Price_per_kg_NOK, data=MarinePris)
+summary(MarinePris_linear)
+plotModel(MarinePris_linear)
 
 # Linear regression model for volume og pris  
 prisVolum_linear <- lm(Volume_tons~Price_per_kg_NOK, data=marine_salmar_laksepris)
