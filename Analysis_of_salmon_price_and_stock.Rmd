@@ -54,7 +54,7 @@ newdate <- seq(as.Date("2000-01-01"), as.Date(today), by = "weeks")
 # Oppdateringen fra SSB henger en uke etter slik at vi må fjerne den siste uken fra,
 # newdate før vi klistrer den inn i datokolonnen i laksepris.
 
-newdate <- head(newdate, -2)
+newdate <- head(newdate, -1)
 
 laksepris$Date <- newdate
 
@@ -70,7 +70,7 @@ laksepris$Date <- newdate
 laksepris <- filter(laksepris, Date > "2007-05-04")
 fixeddate <- seq(as.Date("2007-05-07"), as.Date(today), by = "weeks")
 
-fixeddate <- head(fixeddate, -2)
+fixeddate <- head(fixeddate, -1)
 
 laksepris$Date <- fixeddate
 

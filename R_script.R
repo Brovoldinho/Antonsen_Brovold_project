@@ -34,11 +34,12 @@ newdate <- seq(as.Date("2000-01-01"), as.Date(today), by = "weeks")
 
 # Oppdateringen fra SSB henger en uke etter slik at vi må fjerne den siste uken fra,
 # newdate før vi klistrer den inn i datokolonnen i laksepris.
+fixingdate <-length(laksepris$Date)
 
-newdate <- head(newdate, -1)
+newdate <- head(newdate, fixingdate)
 
 laksepris$Date <- newdate
-
+ 
 # I tilfeller hvor dato matcher med laksepris datoene, betyr det at oppdatering
 # fra SSB i nåværende øyeblikk ikke henger en uke etter, slik at da ser man bort ifra
 # de to siste linjenene, og kjører rm(list=ls()) som står øverst i r fila.
