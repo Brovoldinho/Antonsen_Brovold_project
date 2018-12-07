@@ -72,11 +72,13 @@ laksepris$Date <- newdate
 laksepris <- filter(laksepris, Date > "2007-05-04")
 fixeddate <- seq(as.Date("2007-05-07"), as.Date(today), by = "weeks")
 
-fixeddate <- head(fixeddate, -1)
+fixingdate2 <- length(laksepris$Date)
+
+fixeddate <- head(fixeddate, fixingdate2)
 
 laksepris$Date <- fixeddate
 
-rm(newdate)
+rm(newdate, fixingdate)
 
 laksepris %>% ggvis(~Date, ~Price_per_kg_NOK) %>%
   layer_paths() %>%
